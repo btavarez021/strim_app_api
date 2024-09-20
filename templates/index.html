@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Send Commands</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- jQuery -->
+    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcode.jquery.com%2Fjquery-3.6.0.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191455281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=4kVqLRPamrCqgIToU8U70Nkk5MCXvENzL87TP%2BV6g5A%3D&reserved=0"></script>
+
+    <!-- Bootstrap -->
+    <link href="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fbootstrap%405.0.2%2Fdist%2Fcss%2Fbootstrap.min.css&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191485706%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=GdvFNs5bLubkC73Xt1UHkqs6nz80mzO%2BZ9fqPu8hz4U%3D&reserved=0" rel="stylesheet">
+    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40popperjs%2Fcore%402.9.2%2Fdist%2Fumd%2Fpopper.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191497937%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=sYeuiVh4BjNF%2FII7Hr2t92fbigpX9XMnh47ZPCb0CSI%3D&reserved=0"></script>
+    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fbootstrap%405.0.2%2Fdist%2Fjs%2Fbootstrap.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191508754%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=HhtT0dec%2F9FJGRIkJ31bYSVocQA3aciD67WhyCQbuq4%3D&reserved=0"></script>
+
+    <style>
+        .alert {
+            margin-top: 10px;
+        }
+        .btn .spinner-border {
+            display: none;
+        }
+        .btn-loading .spinner-border {
+            display: inline-block;
+        }
+        .btn-loading {
+            pointer-events: none;
+        }
+        .btn-extra-small {
+            padding: 1px 5px;
+            font-size: 10px;
+            line-height: 1.5;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+        <div class="mb-3 w-25">
+            <label for="ship-dropdown" class ="form-label">Select Ship</label>
+            <select class ="form-select" id="ship-dropdown" name="ship">
+                <option value="ship 1">Ship 1</option>
+                <option value="ship 2">Ship 2</option>
+                <option value="ship 3">Ship 3</option>
+            </select>
+
+            <form id="command-form">
+                <label for="send-command-to-ship" class="form-label">Input Commands</label>
+                <textarea class="form-control form-control-sm" id="send-command-to-ship" name="commands" rows="3"></textarea>
+
+                <button id="send-command" class="btn btn-success btn-extra-small" type="submit">
+                    Send Command
+                    <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                </button>
+                <div id="sendcommand" class="alert mt-3" role="alert" style="display: none;"></div>
+            </form>
+        </div>
+
+
+    <script>
+        $('#command-form').submit(function(event) {
+            event.preventDefault(); // Prevent form from reloading the page
+           
+            const command = $('#send-command-to-ship').val(); // Get the command text
+            const ship = $('#ship-dropdown').val(); // Get the selected ship from dropdown
+
+            // Add loading class to button
+            $('#send-command').addClass('btn-loading');
+
+            // Send AJAX request
+            $.post('/striim/sendcommands', { commands: command, ship:ship })
+                .done(function(data) {
+                    $('#sendcommand').removeClass('alert-danger').addClass('alert alert-success');
+                    $('#sendcommand').text(data).show();
+                })
+                .fail(function(xhr) {
+                    $('#sendcommand').removeClass('alert-success').addClass('alert alert-danger');
+                    $('#sendcommand').text('Error: ' + xhr.responseJSON.error).show();
+                })
+                .always(function() {
+                    $('#send-command').removeClass('btn-loading');
+                });
+        });
+    </script>
+
+</body>
+</html>
