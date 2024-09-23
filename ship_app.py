@@ -56,12 +56,14 @@ def send_commands_to_ship():
     if not ship_url:
         return jsonify({"error": f"Could not find {selected_ship}"}), 404
     
+    if len(command) < 5:
+        return jsonify({"error": f"Please enter a longer command."}), 404
+    
     payload = {
         "ship": selected_ship, 
         "command": command}
     
     print(f"PAYLOAD: {payload}")
-    
     
     try:
         response = requests.post(f'{ship_url}/server/restart', json=payload)
