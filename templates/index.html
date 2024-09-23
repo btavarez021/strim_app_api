@@ -1,86 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Send Commands</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- jQuery -->
-    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcode.jquery.com%2Fjquery-3.6.0.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191455281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=4kVqLRPamrCqgIToU8U70Nkk5MCXvENzL87TP%2BV6g5A%3D&reserved=0"></script>
-
-    <!-- Bootstrap -->
-    <link href="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fbootstrap%405.0.2%2Fdist%2Fcss%2Fbootstrap.min.css&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191485706%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=GdvFNs5bLubkC73Xt1UHkqs6nz80mzO%2BZ9fqPu8hz4U%3D&reserved=0" rel="stylesheet">
-    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40popperjs%2Fcore%402.9.2%2Fdist%2Fumd%2Fpopper.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191497937%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=sYeuiVh4BjNF%2FII7Hr2t92fbigpX9XMnh47ZPCb0CSI%3D&reserved=0"></script>
-    <script src="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fbootstrap%405.0.2%2Fdist%2Fjs%2Fbootstrap.min.js&data=05%7C02%7C%7Cca63e8bfb2c34d8ae84108dcd989982c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C638624432191508754%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=HhtT0dec%2F9FJGRIkJ31bYSVocQA3aciD67WhyCQbuq4%3D&reserved=0"></script>
-
-    <style>
-        .alert {
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Commands to Ship</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .alert {
+        margin-top: 10px;
+    }
+    .btn .spinner-border {
+        display: none;
+    }
+    .btn-loading .spinner-border {
+        display: inline-block;
+    }
+    .btn-loading {
+        pointer-events: none;
+    }
+    .btn-sm,
+    .form-label {
             margin-top: 10px;
         }
-        .btn .spinner-border {
-            display: none;
-        }
-        .btn-loading .spinner-border {
-            display: inline-block;
-        }
-        .btn-loading {
-            pointer-events: none;
-        }
-        .btn-extra-small {
-            padding: 1px 5px;
-            font-size: 10px;
-            line-height: 1.5;
-            border-radius: 3px;
-        }
-    </style>
+</style>
 </head>
 <body>
-        <div class="mb-3 w-25">
-            <label for="ship-dropdown" class ="form-label">Select Ship</label>
-            <select class ="form-select" id="ship-dropdown" name="ship">
-                <option value="ship 1">Ship 1</option>
-                <option value="ship 2">Ship 2</option>
-                <option value="ship 3">Ship 3</option>
-            </select>
+<div class="mb-3 w-25">
+<form id="command-form" method="POST" action="/striim/sendcommands">
+<label for="ship-dropdown" class="form-label">Select Ship</label>
+<select class="form-select" id="ship-dropdown" name="ship">
+<option value="Ship 1">Ship 1</option>
+<option value="Ship 2">Ship 2</option>
+<option value="Ship 3">Ship 3</option>
+</select>
+<label for="send-command-to-ship" class="form-label">Input Commands</label>
+<textarea class="form-control form-control-sm" id="send-command-to-ship" name="command" rows="3"></textarea>
+<button id="send-command" class="btn btn-primary btn-sm" type="submit">Send Command
+<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display:none;"></span>
+</button>
+<button id="start-striim" class="btn btn-success btn-sm">Start Server
+<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+</button>
+<button id="stop-striim" class="btn btn-danger btn-sm">Stop Server
+<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+</button>
+<div id="send-command-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+<div id="start" class="alert" role="alert"></div>
+<div id="stop" class="alert" role="alert"></div>
+</form>
+</div>
+<script>
+$(document).ready(function() {
+    function clearStatus() {
+        $('#start').hide().removeClass('alert-success alert-danger alert-info');
+        $('#stop').hide().removeClass('alert-success alert-danger alert-info');
+         $('send-command-alert').hide().removeClass('alert-success alert-danger alert-info');
+    }
 
-            <form id="command-form">
-                <label for="send-command-to-ship" class="form-label">Input Commands</label>
-                <textarea class="form-control form-control-sm" id="send-command-to-ship" name="commands" rows="3"></textarea>
+    function showAlert(alertElement, duration) {
+        setTimeout(function() {
+            alertElement.fadeOut(); // Smoothly hide the alert
+            }, duration);
+    }
 
-                <button id="send-command" class="btn btn-success btn-extra-small" type="submit">
-                    Send Command
-                    <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
-                </button>
-                <div id="sendcommand" class="alert mt-3" role="alert" style="display: none;"></div>
-            </form>
-        </div>
+    // Start Server action
+    $('#start-striim').click(function() {
+        // clearStatus();
+        $('#start').hide().removeClass('alert-success alert-danger');
+        const ship = $('#ship-dropdown').val();  // Get the selected ship
+        $('#start-striim').prop('disabled', true);  // Disable the button during request
+        $('#start-striim .spinner-border').show();  // Show the spinner
+        $.post('/striim/start', { ship: ship })  // Send POST request with ship data
+            .done(function(data) {
+                $('#start').addClass('alert alert-success').text('Server Started on ' + ship + ': ' + data.message).show();
+            })
+            .fail(function(xhr) {
+                let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An error occurred.";
+                $('#start').addClass('alert alert-danger').text('Error: ' + errorMsg).show();
+            })
+            .always(function() {
+                $('#start-striim').prop('disabled', false);  // Re-enable the button
+                $('#start-striim .spinner-border').hide();  // Hide the spinner
+                showAlert($('#start'), 3000);
+            });
+    });
+    // Stop Server action
+    $('#stop-striim').click(function() {
+        // clearStatus();
+        $('#stop').hide().removeClass('alert-success alert-danger');
+        const ship = $('#ship-dropdown').val();  // Get the selected ship
+        $('#stop-striim').prop('disabled', true);  // Disable the button during request
+        $('#stop-striim .spinner-border').show();  // Show the spinner
+        $.post('/striim/stop', { ship: ship })  // Send POST request with ship data
+            .done(function(data) {
+                $('#stop').addClass('alert alert-success').text('Server Stopped on ' + ship + ': ' + data.message).show();
+            })
+            .fail(function(xhr) {
+                let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An error occurred.";
+                $('#stop').addClass('alert alert-danger').text('Error: ' + errorMsg).show();
+            })
+            .always(function() {
+                $('#stop-striim').prop('disabled', false);  // Re-enable the button
+                $('#stop-striim .spinner-border').hide();  // Hide the spinner
+                showAlert($('#stop'), 3000)
 
+            });
+    });
+    // Command form submission
+    $('#command-form').submit(function(event) {
+        clearStatus();
+        event.preventDefault(); // Prevent form from reloading the page
+        const command = $('#send-command-to-ship').val(); // Get the command text
+        const ship = $('#ship-dropdown').val(); // Get the selected ship from dropdown
+        console.log(`Sending command: ${command} to ship ${ship}`); // Log for debugging
+        $('#send-command').prop('disabled', true);
+        $('#send-command .spinner-border').show();
+        $.ajax({
+            url: '/striim/sendcommands',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                command: command,
+                ship: ship
+            }),
+            success: function(data) {
+                $('#send-command-alert').removeClass('alert-danger').addClass('alert alert-success');
+                $('#send-command-alert').text('Success: ' + data.message).show();
+                $('#command-form')[0].reset(); // Clear form on success
+            },
+            error: function(xhr) {
+                let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An unknown error occurred.";
+                $('#send-command-alert').removeClass('alert-success').addClass('alert alert-danger');
+                $('#send-command-alert').text('Error: ' + errorMsg).show();
+            },
+            complete: function() {
+                $('#send-command').prop('disabled', false);
+                $('#send-command .spinner-border').hide();
+                showAlert($('#send-command-alert'), 3000)
 
-    <script>
-        $('#command-form').submit(function(event) {
-            event.preventDefault(); // Prevent form from reloading the page
-           
-            const command = $('#send-command-to-ship').val(); // Get the command text
-            const ship = $('#ship-dropdown').val(); // Get the selected ship from dropdown
-
-            // Add loading class to button
-            $('#send-command').addClass('btn-loading');
-
-            // Send AJAX request
-            $.post('/striim/sendcommands', { commands: command, ship:ship })
-                .done(function(data) {
-                    $('#sendcommand').removeClass('alert-danger').addClass('alert alert-success');
-                    $('#sendcommand').text(data).show();
-                })
-                .fail(function(xhr) {
-                    $('#sendcommand').removeClass('alert-success').addClass('alert alert-danger');
-                    $('#sendcommand').text('Error: ' + xhr.responseJSON.error).show();
-                })
-                .always(function() {
-                    $('#send-command').removeClass('btn-loading');
-                });
+            }
+            
         });
-    </script>
+    });
+});
 
+</script>
 </body>
 </html>
