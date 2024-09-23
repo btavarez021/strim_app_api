@@ -61,15 +61,17 @@ def send_commands_to_ship():
         "command": command}
     
     print(f"PAYLOAD: {payload}")
-
+    
     
     try:
         response = requests.post(f'{ship_url}/server/restart', json=payload)
         if response.status_code == 200:
-            return jsonify(response.json()), 200
+            # return jsonify(response.json()), 200
+            return jsonify({"message": f"Sent command(s) to {selected_ship}"}), 200
+
         else:
             print(f"failed with statuscode {response.status_code}")
-            return jsonify({"error": "Failed to send command"}), response.status_code
+            return jsonify({"error": f"Failed to send command(s) to {selected_ship}"}), response.status_code
     except requests.RequestException as e:
         print(f'RequestException: {str(e)}')
         return jsonify({"error": str(e)}), 500
