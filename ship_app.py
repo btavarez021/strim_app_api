@@ -56,7 +56,7 @@ def send_commands_to_ship():
     if not ship_url:
         return jsonify({"error": f"Could not find {selected_ship}"}), 404
     
-    if len(command) < 5:
+    if len(command) <= 5:
         return jsonify({"error": f"Please enter a longer command."}), 404
     
     payload = {
@@ -83,6 +83,8 @@ def send_commands_to_ship():
 def stop_server():
     
     selected_ship = request.form.get('ship')
+    ship_url = SHIP_API_MAP.get(selected_ship)
+
     print(SHIP_API_MAP[selected_ship] )
 
 
@@ -92,8 +94,6 @@ def stop_server():
     if not selected_ship:
         return jsonify({"error": "please select a ship"}), 400
     
-    ship_url = SHIP_API_MAP.get(selected_ship)
-
     if not ship_url:
         return jsonify({"error": f"Could not find {selected_ship}"}), 404
 
@@ -101,6 +101,8 @@ def stop_server():
         response = requests.post(f'{ship_url}/server/stop')
         if response.status_code == 200:
             return jsonify({"message":f"Server on {selected_ship} is stopping", "status":"stopped"}), 200
+        elif response.status_code == 202:
+            return jsonify({"message":f"Server on {selected_ship} is being stopped", "status":"pending"}), 202
         else:
             return jsonify({"error": f"Failed to stop {selected_ship}"}), response.status_code
     except requests.RequestException as e:
@@ -110,6 +112,8 @@ def stop_server():
 def start_server():
 
     selected_ship = request.form.get('ship')
+    ship_url = SHIP_API_MAP.get(selected_ship)
+
     print(SHIP_API_MAP[selected_ship] )
 
     print(f"Selected ship {selected_ship}")
@@ -118,7 +122,6 @@ def start_server():
     if not selected_ship:
         return jsonify({"error": "please select a ship"}), 400
     
-    ship_url = SHIP_API_MAP.get(selected_ship)
 
     if not ship_url:
         return jsonify({"error": f"Could not find {selected_ship}"}), 404
@@ -127,6 +130,8 @@ def start_server():
         response = requests.post(f'{ship_url}/server/start')
         if response.status_code == 200:
             return jsonify({"message":f"Server on {selected_ship} is starting", "status":"running"}), 200
+        elif response.status_code == 202:
+            return jsonify({"message":f"Server on {selected_ship} is being started", "status":"pending"}), 202
         else:
             return jsonify({"error": f"Failed to start {selected_ship}"}), response.status_code
     except requests.RequestException as e:

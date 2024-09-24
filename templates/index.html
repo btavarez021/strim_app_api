@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Send Commands to Ship</title>
+<title>NCL STRIIM API</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
-    body {
-        margin: 10px;
-    }
     .alert {
         margin-top: 10px;
     }
@@ -29,30 +26,34 @@
 </style>
 </head>
 <body>
-<div class="mb-3 w-25">
-<form id="command-form" method="POST" action="/striim/sendcommands">
-<label for="ship-dropdown" class="form-label">Select Ship</label>
-<select class="form-select" id="ship-dropdown" name="ship">
-<option value="Ship 1">Ship 1</option>
-<option value="Ship 2">Ship 2</option>
-<option value="Ship 3">Ship 3</option>
-</select>
-<label for="send-command-to-ship" class="form-label">Input Commands</label>
-<textarea class="form-control form-control-sm" id="send-command-to-ship" name="command" rows="3"></textarea>
-<button id="send-command" class="btn btn-primary btn-sm" type="submit">Send Command
-<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display:none;"></span>
-</button>
-<button id="start-striim" class="btn btn-success btn-sm" type="button">Start Server
-<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
-</button>
-<button id="stop-striim" class="btn btn-danger btn-sm" type="button">Stop Server
-<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
-</button>
-<div id="send-command-alert" class="alert mt-3" role="alert" style="display: none;"></div>
-<div id="start" class="alert" role="alert"></div>
-<div id="stop" class="alert" role="alert"></div>
-</form>
+
+<div class="container-fluid">   
+    <div class="mb-3 w-25">
+        <form id="command-form" method="POST" action="/striim/sendcommands">
+            <label for="ship-dropdown" class="form-label">Select a Ship</label>
+            <select class="form-select" id="ship-dropdown" name="ship">
+                <option value="Ship 1">Ship 1</option>
+                <option value="Ship 2">Ship 2</option>
+                <option value="Ship 3">Ship 3</option>
+            </select>
+            <label for="send-command-to-ship" class="form-label">Input Commands</label>
+                <textarea class="form-control form-control-sm" id="send-command-to-ship" name="command" rows="3"></textarea>
+                <button id="send-command" class="btn btn-primary btn-sm" type="submit">Send Command
+                <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display:none;"></span>
+            </button>
+            <button id="start-striim" class="btn btn-success btn-sm" type="button">Start Server
+                <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+            </button>
+            <button id="stop-striim" class="btn btn-danger btn-sm" type="button">Stop Server
+                <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+            </button>
+            <div id="send-command-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+            <div id="start" class="alert" role="alert"></div>
+            <div id="stop" class="alert" role="alert"></div>
+        </form>
+    </div>
 </div>
+
 <script>
 $(document).ready(function() {
     function clearStatus() {
@@ -138,6 +139,11 @@ $(document).ready(function() {
             console.log(`Sending command: ${command} to ship ${ship}`); // Log for debugging
             // $('#send-command').prop('disabled', true);
             // $('#send-command .spinner-border').show();
+            if (command.length <= 5){
+            alert("Input must be at least 5 characters long.");
+                return; // Exit if validation fails
+            }
+
             if (confirm("Are you sure you want to send the command(s)?")) {
                 $.ajax({
                     url: '/striim/sendcommands',
