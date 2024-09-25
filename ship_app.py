@@ -35,6 +35,45 @@ def index():
 #     print(data)
 #     return data
 
+def get_api_url():
+
+    data = request.get_json()
+    selected_ship = data.get('ship')
+
+    ship_url = SHIP_API_MAP.get(selected_ship)
+
+
+    print(f"THIS IS SHIP APP DATA {data}")
+
+    if not selected_ship:
+        return jsonify({"error": "No ship selected"}), 400
+
+    return ship_url, data
+    
+@app.route('/striim/status', methods=['POST'])
+def check_status():
+
+
+    ship_url, data= get_api_url()
+
+    print(f"SHIP URL {ship_url} and {data}")
+
+
+    try:
+        response = requests.get(f'{ship_url}/server/status', json=data)
+        print(f"RESPONSE: {response}")
+        if response.status_code == 200:
+            status_data = response.json()
+            print(f"JSONNN: {status_data}")
+            return jsonify({"message":f"{data.get('ship')} is {status_data.get('status')}"}), 200
+
+        else:
+            print(f"failed with statuscode {response.status_code}")
+            return jsonify({"error": f"Failed to send command(s) to {data}"}), response.status_code
+    except requests.RequestException as e:
+        print(f'RequestException: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/striim/sendcommands', methods=['POST'])
 def send_commands_to_ship():
@@ -45,7 +84,6 @@ def send_commands_to_ship():
 
     ship_url = SHIP_API_MAP.get(selected_ship)
     print(SHIP_API_MAP[selected_ship] )
-
 
     print(f"This is the ship chosen: {selected_ship}")
     print(f"This command was received:{command}")

@@ -24,11 +24,17 @@ ships = {
 
 @app.route('/api/v1/server/status', methods=['GET'])
 def get_status():
+
+    # data = request.get_json()
+    # command = data.get('command')
+    # ship = data.get('ship')
+
+    # print(f"THIS IS MOCK API DATA {data}")
     return jsonify({
-        "status": "Status: " + striim_status["status"]
+        "status": striim_status["status"]
     })
 
-@app.route('/api/v1/server/commands', methods=['GET'])
+@app.route('/api/v1/server/ commands', methods=['GET'])
 def show_commands():
 
      return jsonify({

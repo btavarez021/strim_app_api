@@ -41,6 +41,9 @@
                 <button id="send-command" class="btn btn-primary btn-sm" type="submit">Send Command
                 <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display:none;"></span>
             </button>
+            <button id="check-status" class="btn btn-info btn-sm">Check Status
+                <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+            </button>
             <button id="start-striim" class="btn btn-success btn-sm" type="button">Start Server
                 <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
             </button>
@@ -48,8 +51,9 @@
                 <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
             </button>
             <div id="send-command-alert" class="alert mt-3" role="alert" style="display: none;"></div>
-            <div id="start" class="alert" role="alert"></div>
-            <div id="stop" class="alert" role="alert"></div>
+            <div id="start" class="alert" role="alert" style="display: none;"></div>
+            <div id="stop" class="alert" role="alert" style="display: none;"></div>
+            <div id="status" class="alert" role="alert" style="display: none;"></div>
         </form>
     </div>
 </div>
@@ -69,6 +73,34 @@ $(document).ready(function() {
             }, duration);
     }
 
+    //Check status
+
+    $('#check-status').click(function() {
+   // Clear the previous status message
+   $('#status').hide().removeClass('alert-success alert-danger');
+   const ship = $('#ship-dropdown').val();  // Get the selected ship
+   $('#check-status').prop('disabled', true);  // Disable the button during the request
+   $('#check-status .spinner-border').show();  // Show the spinner
+   $.ajax({
+       url: '/striim/status',
+       type: 'POST',
+       contentType: 'application/json',
+       data: JSON.stringify({ ship: ship }),  // Send the ship data as JSON
+       success: function(data) {
+           $('#status').addClass('alert alert-success').text(data.message).show();  // Show success message
+       },
+       error: function(xhr) {
+           let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An error occurred.";
+           $('#status').addClass('alert alert-danger').text('Error: ' + errorMsg).show();  // Show error message
+       },
+       complete: function() {
+           $('#check-status').prop('disabled', false);  // Re-enable the button
+           $('#check-status .spinner-border').hide();  // Hide the spinner
+           showAlert($('#status'), 3000);  // Optionally show alert
+       }
+   });
+});
+
     // Start Server action
     $('#start-striim').click(function() {
         // clearStatus();
@@ -84,6 +116,12 @@ $(document).ready(function() {
                 })
                 .fail(function(xhr) {
                     let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An error occurred.";
+                    if(xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = "API endpoint not found.";
+                    }
+                    else if (xhr.status == 404) {
+                        errorMsg = 'Internal server error. Please try again.'
+                    }
                     $('#start').addClass('alert alert-danger').text('Error: ' + errorMsg).show();
                 })
                 .always(function() {
@@ -114,6 +152,12 @@ $(document).ready(function() {
                 })
                 .fail(function(xhr) {
                     let errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An error occurred.";
+                    if(xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = "API endpoint not found.";
+                    }
+                    else if (xhr.status == 404) {
+                        errorMsg = 'Internal server error. Please try again.'
+                    }
                     $('#stop').addClass('alert alert-danger').text('Error: ' + errorMsg).show();
                 })
                 .always(function() {
