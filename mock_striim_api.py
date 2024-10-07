@@ -21,20 +21,29 @@ ships = {
 #         "currency": "USD"
 # }
 
+@app.route('/api/v1/server/status-all', methods=['GET'])
+def get_status_all():
+
+    return jsonify(
+        {
+        "ships": [
+                {"name": "Ship 1", "status": striim_status["status"]}, 
+                {"name": "Ship 2", "status": striim_status["status"]}, 
+                {"name": "Ship 3", "status": striim_status["status"]}, 
+                {"name": "Ship 4", "status": striim_status["status"]}, 
+                {"name": "Ship 5", "status": striim_status["status"]}, 
+            ]
+        }
+    )
 
 @app.route('/api/v1/server/status', methods=['GET'])
 def get_status():
 
-    # data = request.get_json()
-    # command = data.get('command')
-    # ship = data.get('ship')
-
-    # print(f"THIS IS MOCK API DATA {data}")
     return jsonify({
         "status": striim_status["status"]
     })
 
-@app.route('/api/v1/server/ commands', methods=['GET'])
+@app.route('/api/v1/server/sendcommands', methods=['GET'])
 def show_commands():
 
      return jsonify({
